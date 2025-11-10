@@ -1,0 +1,36 @@
+{
+  "name": "com.arandra.gsheet-to-data",
+  "displayName": "Google Sheet To Data (Editor)",
+  "version": "0.1.0",
+  "unity": "2022.2",
+  "description": "Unity Editor tooling that pulls structured Google Sheet data through Google APIs and materializes strongly-typed ScriptableObjects.",
+  "keywords": [
+    "google",
+    "sheet",
+    "data",
+    "editor",
+    "tooling"
+  ],
+  "license": "MIT",
+  "documentationUrl": "https://github.com/arandra/GoogleSheetToDataForUnity/blob/main/README.md",
+  "changelogUrl": "https://github.com/arandra/GoogleSheetToDataForUnity/blob/main/Packages/com.arandra.gsheet-to-data/CHANGELOG.md",
+  "licensesUrl": "https://github.com/arandra/GoogleSheetToDataForUnity/blob/main/Packages/com.arandra.gsheet-to-data/LICENSE.md",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.2"
+  },
+  "samples": [
+    {
+      "displayName": "FieldTransform Table Workflow",
+      "description": "Preset configuration that mirrors the FieldTransform sheet (ID: 1_2Y3BtltwsyXTovWuWV6J32x_Ebe2Sy8vybGNhzkIsM) and demonstrates table exports.",
+      "path": "Samples~/FieldTransformSample"
+    },
+    {
+      "displayName": "InitConst Single Value Workflow",
+      "description": "Preset configuration for the InitConst sheet to walk through CONST exports and ScriptableObject generation.",
+      "path": "Samples~/InitConstSample"
+    }
+  ],
+  "author": {
+    "name": "arandra"
+  }
+}

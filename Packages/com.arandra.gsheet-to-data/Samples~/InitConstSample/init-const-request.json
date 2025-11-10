@@ -1,0 +1,8 @@
+{
+  "sheetId": "1_2Y3BtltwsyXTovWuWV6J32x_Ebe2Sy8vybGNhzkIsM",
+  "sheetName": "InitConst",
+  "sheetType": "Const",
+  "scriptOutputPath": "Assets/GSheetToData/Generated/Scripts",
+  "assetOutputPath": "Assets/GSheetToData/Generated/Assets",
+  "namespace": "Game.Data.InitConst"
+}
