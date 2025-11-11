@@ -75,7 +75,7 @@ namespace GSheetToDataForUnity.Editor
                 Debug.Log($"[GSheetToData] Updated ScriptableObject at {job.AssetRelativePath}.");
             }
 
-            UnityEngine.Object.DestroyImmediate(assetInstance, true);
+            UnityEngine.Object.Destroy(assetInstance);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return true;
