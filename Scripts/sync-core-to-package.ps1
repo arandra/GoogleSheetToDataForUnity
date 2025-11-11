@@ -1,6 +1,6 @@
 param(
-    [string]$CorePath = "../Core/GSheetToDataCore",
-    [string]$SerializableTypesPath = "../Core/SerializableTypes"
+    [string]$CorePath = "Core/GSheetToDataCore",
+    [string]$SerializableTypesPath = "Core/SerializableTypes"
 )
 
 $ErrorActionPreference = "Stop"
