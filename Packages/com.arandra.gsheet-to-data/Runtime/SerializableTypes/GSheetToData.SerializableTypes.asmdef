@@ -1,0 +1,17 @@
+{
+    "name": "GSheetToData.SerializableTypes",
+    "rootNamespace": "SerializableTypes",
+    "references": [
+        "Unity.Newtonsoft.Json"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": []
+}

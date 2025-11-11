@@ -1,7 +1,7 @@
 {
   "name": "com.arandra.gsheet-to-data",
   "displayName": "Google Sheet To Data (Editor)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "unity": "2022.2",
   "description": "Unity Editor tooling that pulls structured Google Sheet data through Google APIs and materializes strongly-typed ScriptableObjects.",
   "keywords": [
