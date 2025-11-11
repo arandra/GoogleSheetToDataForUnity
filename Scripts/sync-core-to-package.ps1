@@ -30,7 +30,7 @@ function Sync-Folder {
     Write-Host "Syncing $Source -> $Destination"
     New-Item -ItemType Directory -Force -Path $Destination | Out-Null
 
-    robocopy $Source $Destination /E /XD .git .vs bin obj /XF *.user *.csproj.nuget.* | Out-Null
+    robocopy $Source $Destination /E /XD .git .vs bin obj /XF *.user *.csproj *.csproj.nuget.* | Out-Null
     if ($LASTEXITCODE -ge 8) {
         throw "robocopy failed with exit code $LASTEXITCODE"
     }
@@ -68,7 +68,7 @@ $currentFiles = @()
 foreach ($target in $targets) {
     if (-not (Test-Path $target.Source)) { continue }
     $prefix = $target.Rel
-    Get-ChildItem $target.Source -Recurse -File | Where-Object { $_.Extension -ne ".meta" } | ForEach-Object {
+    Get-ChildItem $target.Source -Recurse -File | Where-Object { $_.Extension -notin @(".meta", ".csproj") } | ForEach-Object {
         $relativeInner = $_.FullName.Substring($target.Source.Length + 1).Replace("\", "/")
         $currentFiles += "$prefix/$relativeInner"
     }

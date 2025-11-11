@@ -32,12 +32,14 @@ copy_tree() {
       --exclude 'bin/' \
       --exclude 'obj/' \
       --exclude '*.user' \
+      --exclude '*.csproj' \
       --exclude '*.csproj.nuget.*' \
       "${src}/" "${dst}/"
   else
     cp -R "${src}/." "${dst}"
     rm -rf "${dst}/.git" "${dst}/.vs" "${dst}/bin" "${dst}/obj"
     find "${dst}" -name '*.user' -delete || true
+    find "${dst}" -name '*.csproj' -delete || true
     find "${dst}" -name '*.csproj.nuget.*' -delete || true
   fi
 }
@@ -94,7 +96,7 @@ for dest_rel, src_path in pairs:
     if not src_path.exists():
         continue
     for file_path in src_path.rglob("*"):
-        if file_path.is_file() and not file_path.name.endswith(".meta"):
+        if file_path.is_file() and not file_path.name.endswith(".meta") and not file_path.name.endswith(".csproj"):
             rel_inside = file_path.relative_to(src_path).as_posix()
             current.append(f"{dest_rel}/{rel_inside}")
 

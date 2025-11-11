@@ -1,10 +1,10 @@
-[
-  "Editor/GSheetToDataCore/ClassGenerator.cs",
-  "Editor/GSheetToDataCore/DataParser.cs",
-  "Editor/GSheetToDataCore/JsonGenerator.cs",
-  "Editor/GSheetToDataCore/ParsedSheetData.cs",
-  "Editor/GSheetToDataCore/SheetDataType.cs",
-  "Editor/GSheetToDataCore/SheetLoader.cs",
-  "Runtime/SerializableTypes/Pair.cs",
-  "Runtime/SerializableTypes/PairJsonConverter.cs"
+﻿[
+    "Editor/GSheetToDataCore/ClassGenerator.cs",
+    "Editor/GSheetToDataCore/DataParser.cs",
+    "Editor/GSheetToDataCore/JsonGenerator.cs",
+    "Editor/GSheetToDataCore/ParsedSheetData.cs",
+    "Editor/GSheetToDataCore/SheetDataType.cs",
+    "Editor/GSheetToDataCore/SheetLoader.cs",
+    "Runtime/SerializableTypes/Pair.cs",
+    "Runtime/SerializableTypes/PairJsonConverter.cs"
 ]
