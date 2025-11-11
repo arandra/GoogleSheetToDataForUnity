@@ -18,6 +18,7 @@ namespace GSheetToDataForUnity.Editor
         private SheetDataType sheetType = SheetDataType.Table;
         private bool isGenerating;
         private Vector2 scroll;
+        private bool showSettings = true;
 
         [MenuItem("Tools/GSheetToData/Generator")]
         private static void ShowWindow()
@@ -46,7 +47,12 @@ namespace GSheetToDataForUnity.Editor
 
         private void DrawSettingsSection()
         {
-            EditorGUILayout.LabelField("App Settings", EditorStyles.boldLabel);
+            showSettings = EditorGUILayout.Foldout(showSettings, "App Settings", true);
+            if (!showSettings)
+            {
+                return;
+            }
+
             EditorGUI.indentLevel++;
 
             appSettings.ScriptOutputPath = EditorGUILayout.TextField("Script Output Path", appSettings.ScriptOutputPath);

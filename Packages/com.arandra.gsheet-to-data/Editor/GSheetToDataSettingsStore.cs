@@ -7,7 +7,7 @@ namespace GSheetToDataForUnity.Editor
 {
     internal static class GSheetToDataSettingsStore
     {
-        private const string SettingsAssetPath = "ProjectSettings/GSheetToDataProjectSettings.asset";
+        private const string SettingsAssetPath = "Assets/Settings/Editor/GSheetToDataProjectSettings.asset";
         private const string ClientSecretPrefsKey = "GSheetToDataForUnity.ClientSecretPath";
         private const string TokenStorePrefsKey = "GSheetToDataForUnity.TokenStorePath";
 
