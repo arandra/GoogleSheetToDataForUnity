@@ -86,32 +86,21 @@ namespace GSheetToDataForUnity.Editor
             builder.AppendLine($"[CreateAssetMenu(fileName = \"{scriptableClassName}\", menuName = \"GSheetToData/{scriptableClassName}\")]");
             builder.AppendLine($"public class {scriptableClassName} : ScriptableObject");
             builder.AppendLine("{");
-            builder.AppendLine("    [SerializeField] private string sheetId = string.Empty;");
-            builder.AppendLine("    [SerializeField] private string sheetName = string.Empty;");
-            builder.AppendLine();
-            builder.AppendLine("    public string SheetId => sheetId;");
-            builder.AppendLine("    public string SheetName => sheetName;");
-            builder.AppendLine();
             if (sheetType == GSheetToDataCore.SheetDataType.Table)
             {
                 builder.AppendLine($"    public List<{dataClassName}> Values = new List<{dataClassName}>();");
             }
             else
             {
-                builder.AppendLine($"    public {dataClassName} Value;");
+                builder.AppendLine($"    [SerializeField] private {dataClassName} value = new {dataClassName}();");
+                builder.AppendLine($"    public {dataClassName} Value => value;");
             }
-            builder.AppendLine();
-            builder.AppendLine("    public void SetSheetMetadata(string id, string name)");
-            builder.AppendLine("    {");
-            builder.AppendLine("        sheetId = id;");
-            builder.AppendLine("        sheetName = name;");
-            builder.AppendLine("    }");
             builder.AppendLine();
             if (sheetType == GSheetToDataCore.SheetDataType.Const)
             {
-                builder.AppendLine($"    public void SetValue({dataClassName} value)");
+                builder.AppendLine($"    public void SetValue({dataClassName} newValue)");
                 builder.AppendLine("    {");
-                builder.AppendLine("        Value = value;");
+                builder.AppendLine("        value = newValue;");
                 builder.AppendLine("    }");
             }
             builder.AppendLine("}");

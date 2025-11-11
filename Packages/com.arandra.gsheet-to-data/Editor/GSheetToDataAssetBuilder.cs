@@ -53,8 +53,6 @@ namespace GSheetToDataForUnity.Editor
                              ?? Activator.CreateInstance(listType);
                 AssignTableValues(scriptableType, assetInstance, values);
             }
-            ApplyMetadata(scriptableType, assetInstance, job.SheetId, job.SheetName);
-
             var absoluteAssetPath = GSheetToDataPathUtility.GetAbsoluteFromAssetPath(job.AssetRelativePath);
             var directory = Path.GetDirectoryName(absoluteAssetPath);
             if (!string.IsNullOrEmpty(directory))
@@ -112,31 +110,6 @@ namespace GSheetToDataForUnity.Editor
             }
 
             field.SetValue(instance, value);
-        }
-
-        private static void ApplyMetadata(Type scriptableType, ScriptableObject instance, string sheetId, string sheetName)
-        {
-            var method = scriptableType.GetMethod("SetSheetMetadata", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (method != null)
-            {
-                method.Invoke(instance, new object[] { sheetId, sheetName });
-                return;
-            }
-
-            var sheetIdField = scriptableType.GetField("sheetId", BindingFlags.Instance | BindingFlags.NonPublic)
-                                ?? scriptableType.GetField("SheetId", BindingFlags.Instance | BindingFlags.Public);
-            var sheetNameField = scriptableType.GetField("sheetName", BindingFlags.Instance | BindingFlags.NonPublic)
-                                  ?? scriptableType.GetField("SheetName", BindingFlags.Instance | BindingFlags.Public);
-
-            if (sheetIdField != null)
-            {
-                sheetIdField.SetValue(instance, sheetId);
-            }
-
-            if (sheetNameField != null)
-            {
-                sheetNameField.SetValue(instance, sheetName);
-            }
         }
 
         private static Type FindType(string fullName)
