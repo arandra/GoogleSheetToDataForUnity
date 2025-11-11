@@ -194,4 +194,9 @@ foreach ($rootName in @("Editor", "Runtime")) {
     }
 }
 
+$samplesMeta = Join-Path $packageRoot "Samples~.meta"
+if (Test-Path $samplesMeta) {
+    Remove-Item $samplesMeta -Force
+}
+
 Write-Host "Done. SerializableTypes synced to Runtime/, GSheetToDataCore synced to Editor/."

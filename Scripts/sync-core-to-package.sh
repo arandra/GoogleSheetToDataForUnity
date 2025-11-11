@@ -193,6 +193,10 @@ for root_name in ("Editor", "Runtime"):
     root_path = package_root / root_name
     if root_path.exists():
         ensure_folder_meta(root_path, root_name)
+
+samples_meta = package_root / "Samples~.meta"
+if samples_meta.exists():
+    samples_meta.unlink()
 PY
 else
   echo "Warning: python interpreter not found; skipping deletion tracking"
