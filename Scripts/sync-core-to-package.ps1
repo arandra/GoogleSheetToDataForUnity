@@ -58,7 +58,7 @@ function Get-FileList($path) {
     $result = @()
     if (-not (Test-Path $path)) { return $result }
     Get-ChildItem $path -Recurse -File | Where-Object { $_.Extension -ne ".meta" } | ForEach-Object {
-        $relative = ($_ .FullName).Substring($packageRoot.Length + 1).Replace("\", "/")
+        $relative = ($_.FullName).Substring($packageRoot.Length + 1).Replace("\", "/")
         $result += $relative
     }
     return $result
