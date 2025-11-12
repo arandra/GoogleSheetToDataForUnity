@@ -12,27 +12,9 @@ This repo hosts the distributable package (`Packages/com.arandra.gsheet-to-data`
 
 ## Getting Started
 1. Clone the repo with submodules (`git clone --recurse-submodules`).
-2. Install the Unity package (see the section below) or explore the `Packages/com.arandra.gsheet-to-data` folder directly.
-3. Follow the package [README](Packages/com.arandra.gsheet-to-data/README.md) for installation, OAuth setup, and sample usage.
+2. Install the Unity package by following the steps in [`Packages/com.arandra.gsheet-to-data/README.md`](Packages/com.arandra.gsheet-to-data/README.md).
+3. Explore the package folder directly if you need to inspect asmdefs, samples, or bundled DLLs.
 4. Core-only contributors can continue to work inside `Core/` and push via the upstream repository; update the submodule pointer here when new tags are published.
-
-## Installation (Unity Package Manager)
-The package is designed to be installed straight from this Git repo, so you don't have to copy files manually.
-
-1. Open Unity and go to **Window ▸ Package Manager**.
-2. Click the **+** button → **Add package from git URL…**.
-3. Paste the repo URL (optionally pin to a tag/branch). **Important:** the package lives under `Packages/com.arandra.gsheet-to-data`, so include the `?path=` hint:
-   ```
-   https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main
-   ```
-4. Unity pulls the `com.arandra.gsheet-to-data` package (including the Google APIs DLLs and samples) into your project.
-
-If you keep packages under source control, you can also add the dependency directly in `Packages/manifest.json`:
-```json
-"com.arandra.gsheet-to-data": "https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main"
-```
-
-> Tip: Unity caches git packages per commit, so upgrading later is as easy as changing the hash/tag in the manifest or re-adding the package via the UI.
 
 ## Syncing Core Sources into the Package
 Git-based Unity installs only have access to files that reside under `Packages/com.arandra.gsheet-to-data`.  
@@ -67,8 +49,8 @@ Steps:
 - Document notable changes in [`Packages/com.arandra.gsheet-to-data/CHANGELOG.md`](Packages/com.arandra.gsheet-to-data/CHANGELOG.md).
 
 ## Documentation
-- [Sheet Authoring Guide](Document/SheetAuthoringGuide.md)
-- [Google OAuth Setup Guide](Document/GoogleOAuthSetup.md)
+- [Sheet Authoring Guide](Core/Document/SheetAuthoringGuide.md)
+- [Google OAuth Setup Guide](Core/Document/GoogleOAuthSetup.md)
 - [Project Links](Document/ProjectLinks.md)
 
 ## Testing

@@ -9,15 +9,18 @@ This package wraps the `arandra/GoogleSheetToData` core library, provides Unity 
 - Google Cloud OAuth `client_secret.json` that has access to the Sheets API.
 
 ## Installation
-1. Open `Packages/manifest.json` in your Unity project.
-2. Add the git dependency:
+1. Open Unity and go to **Window ▸ Package Manager**.
+2. Click **+ ▸ Add package from git URL…** and paste  
+   `https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main`  
+   (`?path=…` ensures UPM pulls just the package subfolder).
+3. Alternatively, edit `Packages/manifest.json` directly:
    ```json
-   "com.arandra.gsheet-to-data": "https://github.com/arandra/GoogleSheetToDataForUnity.git#main"
+   "com.arandra.gsheet-to-data": "https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main"
    ```
-3. Unity downloads the package, including the `Core/` submodule source, Editor tooling, and bundled Google API DLLs.
+4. Unity downloads the package, including the `Core/` submodule source, Editor tooling, and bundled Google API DLLs.
 
 ## Quick Start
-1. Follow the [Google OAuth setup guide](../../Document/GoogleOAuthSetup.md) to create `client_secret.json`.
+1. Follow the [Google OAuth setup guide](../../Core/Document/GoogleOAuthSetup.md) to create `client_secret.json`.
 2. In Unity, import an included sample via **Package Manager ▸ Google Sheet To Data (Editor) ▸ Samples** if you want prefilled inputs.
 3. Open **Tools ▸ GSheetToData ▸ Generator**.
 4. Configure:
@@ -58,4 +61,4 @@ Each sample folder ships a JSON preset that documents which IDs/names to paste i
 - Google.Apis.Drive.v3 1.64.0.3155
 - com.unity.nuget.newtonsoft-json 3.0.2 (automatically pulled by the manifest)
 
-See [`Document/SheetAuthoringGuide.md`](../../Document/SheetAuthoringGuide.md) for sheet formatting conventions and [`Document/GoogleOAuthSetup.md`](../../Document/GoogleOAuthSetup.md) for credential guidance.
+See [`Core/Document/SheetAuthoringGuide.md`](../../Core/Document/SheetAuthoringGuide.md) for sheet formatting conventions and [`Core/Document/GoogleOAuthSetup.md`](../../Core/Document/GoogleOAuthSetup.md) for credential guidance.
