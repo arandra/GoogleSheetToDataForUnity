@@ -20,7 +20,7 @@ This package wraps the `arandra/GoogleSheetToData` core library, provides Unity 
 4. Unity downloads the package, including the `Core/` submodule source, Editor tooling, and bundled Google API DLLs.
 
 ## Quick Start
-1. Follow the [Google OAuth setup guide](../../Core/Document/GoogleOAuthSetup.md) to create `client_secret.json`.
+1. Follow the [Google OAuth setup guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md) to create `client_secret.json`.
 2. In Unity, import an included sample via **Package Manager ▸ Google Sheet To Data (Editor) ▸ Samples** if you want prefilled inputs.
 3. Open **Tools ▸ GSheetToData ▸ Generator**.
 4. Configure:
@@ -61,4 +61,4 @@ Each sample folder ships a JSON preset that documents which IDs/names to paste i
 - Google.Apis.Drive.v3 1.64.0.3155
 - com.unity.nuget.newtonsoft-json 3.0.2 (automatically pulled by the manifest)
 
-See [`Core/Document/SheetAuthoringGuide.md`](../../Core/Document/SheetAuthoringGuide.md) for sheet formatting conventions and [`Core/Document/GoogleOAuthSetup.md`](../../Core/Document/GoogleOAuthSetup.md) for credential guidance.
+See the [Sheet Authoring Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md) for formatting conventions and the [Google OAuth Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md) for credential guidance.

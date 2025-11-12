@@ -26,8 +26,8 @@
 
 ## 문서화/Core
 - [x] https://github.com/arandra/GoogleSheetToData.git 의 readme에 추가. 혹은 Document에 문서로 추가하고 링크. (Core/README.md 생성)
-- [x] Sheet 작성요령. (table 방식과 const 방식 설명), (Core/Document/SheetAuthoringGuide.md 추가)
-- [x] Google cloud console에서 `client_secret.json` 생성하는 방법과 보안유의사항 설명. (Core/Document/GoogleOAuthSetup.md 추가)
+- [x] Sheet 작성요령. (table 방식과 const 방식 설명), (https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md 추가)
+- [x] Google cloud console에서 `client_secret.json` 생성하는 방법과 보안유의사항 설명. (https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md 추가)
 - [x] 각 하위 프로젝트의 링크 (예: GoogleSheetToDataForUnity) → Document/ProjectLinks.md 작성
 
 ## 문서화/Unity

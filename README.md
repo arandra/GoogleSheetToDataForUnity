@@ -49,8 +49,8 @@ Steps:
 - Document notable changes in [`Packages/com.arandra.gsheet-to-data/CHANGELOG.md`](Packages/com.arandra.gsheet-to-data/CHANGELOG.md).
 
 ## Documentation
-- [Sheet Authoring Guide](Core/Document/SheetAuthoringGuide.md)
-- [Google OAuth Setup Guide](Core/Document/GoogleOAuthSetup.md)
+- [Sheet Authoring Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md)
+- [Google OAuth Setup Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md)
 - [Project Links](Document/ProjectLinks.md)
 
 ## Testing

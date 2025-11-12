@@ -13,5 +13,5 @@ Use it to verify CONST exports that materialize as a single value on a Scriptabl
    - A ScriptableObject wrapper that exposes `.Value` and metadata setters.
 
 ## Notes
-- CONST rows expect one entry per line as documented in `Core/Document/SheetAuthoringGuide.md`.
+- CONST rows expect one entry per line as documented in https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md.
 - The resulting ScriptableObject exposes `Value` instead of `Values`, making it easier to inject configuration data.

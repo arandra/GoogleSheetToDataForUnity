@@ -6,7 +6,7 @@ Use it to validate the table-mode pipeline end-to-end.
 ## How to use
 1. Import this sample via **Package Manager ▸ Google Sheet To Data (Editor) ▸ Samples**.
 2. Open `field-transform-request.json` and copy the values into **Tools ▸ GSheetToData ▸ Generator**.
-3. Ensure `client_secret.json` points to your local OAuth credentials (see `Core/Document/GoogleOAuthSetup.md`).
+3. Ensure `client_secret.json` points to your local OAuth credentials (see https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md).
 4. Press **Generate ScriptableObject**. After recompilation, the generator enqueues a job that writes:
    - `Assets/GSheetToData/Generated/Scripts/<RowType>.cs`
    - `Assets/GSheetToData/Generated/Scripts/<RowTypePlural>.cs`
@@ -14,6 +14,6 @@ Use it to validate the table-mode pipeline end-to-end.
 5. Keep the token path blank unless you want a custom directory—tokens default to `Temp/GSheetToData/`.
 
 ## What to expect
-- Row definitions follow the “table” guide from `Core/Document/SheetAuthoringGuide.md`.
+- Row definitions follow the “table” guide from https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md.
 - Generated data contains a `List<RowType>` named `Values`.
 - The ScriptableObject stores metadata (Sheet ID/Name) so downstream systems can trace the source.
