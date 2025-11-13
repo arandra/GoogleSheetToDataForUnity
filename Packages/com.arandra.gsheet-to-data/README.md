@@ -15,6 +15,7 @@ This package wraps the `arandra/GoogleSheetToData` core library, provides Unity 
 https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main
 ```
    (`?path=…` ensures UPM pulls just the package subfolder).
+
 3. Alternatively, edit `Packages/manifest.json` directly:
    ```json
    "com.arandra.gsheet-to-data": "https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main"
