@@ -55,7 +55,7 @@ namespace GSheetToDataForUnity.Editor
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.LabelField("Global Defaults live in the Generator window.", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Global defaults live in the Settings window.", EditorStyles.miniLabel);
                 if (GUILayout.Button("Open Settings", GUILayout.Width(140)))
                 {
                     GSheetToDataSettingsWindow.ShowWindow();

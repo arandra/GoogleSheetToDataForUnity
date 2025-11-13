@@ -24,14 +24,13 @@ https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arand
 
 ## Quick Start
 1. Follow the [Google OAuth setup guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md) to create `client_secret.json`.
-2. In Unity, import an included sample via **Package Manager ▸ Google Sheet To Data (Editor) ▸ Samples** if you want prefilled inputs.
-3. Open **Tools ▸ GSheetToData ▸ Generator**.
-4. Configure:
-   - Script & asset output paths (must live under `Assets/`).
-   - Namespace for generated classes.
+2. (Optional) Import a sample via **Package Manager ▸ Google Sheet To Data (Editor) ▸ Samples** for prefilled JSON requests.
+3. Open **Tools ▸ GSheetToData ▸ Settings** to configure:
+   - Script/scriptable output paths (must live under `Assets/`).
+   - Asset output path and default namespaces.
    - Paths to `client_secret.json` and (optional) custom token directory.
-5. Enter the target Sheet ID, Sheet tab name, and Sheet type (Table/Const).
-6. Press **Generate ScriptableObject** to enqueue code generation; the job processor writes .cs files and ScriptableObjects once compilation completes.
+4. Open **Tools ▸ GSheetToData ▸ Asset Manager**. Register a sheet (ID, tab name, type) or import the provided JSON preset.
+5. Select the entry, adjust overrides if needed, then click **Generate / Re-sync**. The job processor writes the .cs files and ScriptableObjects once compilation completes.
 
 ## Settings & Sensitive Data
 - Project-wide defaults (output paths, namespace) are stored in `ProjectSettings/GSheetToDataProjectSettings.asset` as a ScriptableObject.

@@ -36,7 +36,7 @@ Steps:
 > Tip: keep iterating inside `Core/` during development. Run the sync script whenever you need the package copy (and therefore Git installs) to reflect the current Core state.
 
 ## Asset Management & Overrides
-- Use the **Generator** window (`Tools ▸ GSheetToData ▸ Generator`) to edit project-wide defaults (script paths, namespaces, OAuth secrets).
+- Use the **Settings** window (`Tools ▸ GSheetToData ▸ Settings`) to edit project-wide defaults (script paths, namespaces, OAuth secrets).
 - Manage every sheet inside the **Asset Manager** (`Tools ▸ GSheetToData ▸ Asset Manager`). Register sheets, trigger generation/re-sync, and inspect field diffs before regenerating.
 - Toggle overrides per sheet to redirect scripts or ScriptableObjects to custom folders/namespaces—perfect for Addressables or feature-specific assemblies. Overrides affect only the selected sheet; global defaults remain untouched.
 - Built-in actions let you open the Google Sheet in a browser, delete generated scripts/assets, or remove stale registry entries.

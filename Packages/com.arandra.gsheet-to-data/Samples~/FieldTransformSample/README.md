@@ -5,9 +5,9 @@ Use it to validate the table-mode pipeline end-to-end.
 
 ## How to use
 1. Import this sample via **Package Manager ▸ Google Sheet To Data (Editor) ▸ Samples**.
-2. Open `field-transform-request.json` and copy the values into **Tools ▸ GSheetToData ▸ Generator**.
-3. Ensure `client_secret.json` points to your local OAuth credentials (see https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md).
-4. Press **Generate ScriptableObject**. After recompilation, the generator enqueues a job that writes:
+2. Open `field-transform-request.json` and copy the values into the **Asset Manager** (`Tools ▸ GSheetToData ▸ Asset Manager`) when registering the sheet.
+3. Ensure `client_secret.json` points to your local OAuth credentials (see https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md) via the **Settings** window.
+4. Click **Generate / Re-sync**. After recompilation, the job processor writes:
    - `Assets/GSheetToData/Generated/Scripts/<RowType>.cs`
    - `Assets/GSheetToData/Generated/Scripts/<RowTypePlural>.cs`
    - A ScriptableObject asset at `Assets/GSheetToData/Generated/Assets/<RowTypePlural>.asset`

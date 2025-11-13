@@ -20,7 +20,7 @@
 - Keep asmdef names stable: `GSheetToData.Core` (Editor only) and `GSheetToData.SerializableTypes` (Runtime).
 
 ## Testing Guidelines
-- Unity integration tests currently manual: open sample scenes, run generator via `Tools ▸ GSheetToData ▸ Generator`, and confirm ScriptableObjects emit correctly.
+- Unity integration tests currently manual: open sample scenes, use the Asset Manager (`Tools ▸ GSheetToData ▸ Asset Manager`) to generate/re-sync, and confirm ScriptableObjects emit correctly.
 - For Core logic, rely on upstream repository tests (run through the `.sln` in `Core/GoogleSheetToData.sln` if needed). Mirror any fixes back via the submodule update.
 - When adding features, note verification steps in the changelog and README to maintain reproducibility.
 
