@@ -11,9 +11,9 @@ This package wraps the `arandra/GoogleSheetToData` core library, provides Unity 
 ## Installation
 1. Open Unity and go to **Window ▸ Package Manager**.
 2. Click **+ ▸ Add package from git URL…** and paste
-   ```json  
-  "https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main"  
-   ```
+```
+https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arandra.gsheet-to-data#main
+```
    (`?path=…` ensures UPM pulls just the package subfolder).
 3. Alternatively, edit `Packages/manifest.json` directly:
    ```json
