@@ -70,10 +70,10 @@ namespace GSheetToDataForUnity.Editor
             {
                 EditorUtility.CopySerialized(assetInstance, existingAsset);
                 EditorUtility.SetDirty(existingAsset);
+                UnityEngine.Object.DestroyImmediate(assetInstance);
                 Debug.Log($"[GSheetToData] Updated ScriptableObject at {job.AssetRelativePath}.");
             }
 
-            UnityEngine.Object.Destroy(assetInstance);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return true;
