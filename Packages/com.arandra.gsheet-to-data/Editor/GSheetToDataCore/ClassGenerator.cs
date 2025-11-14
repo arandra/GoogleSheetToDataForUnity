@@ -147,18 +147,12 @@ namespace GSheetToDataCore
                 return $"default(Pair<{keyCSharpType}, {valueCSharpType}>)";
             }
 
-            switch (lowerType)
+            if (lowerType == "string")
             {
-                case "int": return "0";
-                case "integer": return "0";
-                case "float": return "0.0f";
-                case "double": return "0.0";
-                case "number": return "0.0f";
-                case "bool": return "false";
-                case "boolean": return "false";
-                case "string": return "string.Empty";
-                default: return "default"; // For object or unknown types
+                return "string.Empty";
             }
+
+            return "default";
         }
 
         private string GetCSharpType(string typeName)
@@ -190,12 +184,9 @@ namespace GSheetToDataCore
             switch (lowerType)
             {
                 case "int": return "int";
-                case "integer": return "int";
                 case "float": return "float";
                 case "double": return "double";
-                case "number": return "float"; // Assuming float for generic number
                 case "bool": return "bool";
-                case "boolean": return "bool";
                 case "string": return "string";
                 default: return "object"; // Default to object for unknown types
             }

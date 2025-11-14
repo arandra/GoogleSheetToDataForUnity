@@ -79,8 +79,6 @@ namespace GSheetToDataCore
 
         private object? ConvertToTypedObject(string? value, string type)
         {
-            if (string.IsNullOrEmpty(value)) return null;
-
             var lowerType = type.ToLower();
 
             if (lowerType.EndsWith("[]"))
@@ -95,6 +93,11 @@ namespace GSheetToDataCore
 
                 var listType = typeof(List<>).MakeGenericType(baseType);
                 var list = (System.Collections.IList)Activator.CreateInstance(listType)!;
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return list;
+                }
 
                 // If the base type is a Pair, we need a more sophisticated split
                 if (baseTypeName.ToLower().StartsWith("pair<"))
@@ -136,6 +139,20 @@ namespace GSheetToDataCore
 
                 var keyTypeName = genericTypes[0];
                 var valueTypeName = genericTypes[1];
+                var keyType = GetSystemType(keyTypeName);
+                var valueType = GetSystemType(valueTypeName);
+
+                if (keyType == null || valueType == null)
+                {
+                    return null; // Could not resolve types
+                }
+
+                var pairType = typeof(Pair<,>).MakeGenericType(keyType, valueType);
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return Activator.CreateInstance(pairType);
+                }
 
                 // Parse the pair string value, e.g., "(1,hello)" or "1,hello"
                 string cleanedValue = value.Trim();
@@ -154,40 +171,51 @@ namespace GSheetToDataCore
                 var keyObject = ConvertToTypedObject(pairComponents[0], keyTypeName);
                 var valueObject = ConvertToTypedObject(pairComponents[1], valueTypeName);
 
-                // Dynamically create Pair<TKey, TValue>
-                var keyType = GetSystemType(keyTypeName);
-                var valueType = GetSystemType(valueTypeName);
-
-                if (keyType == null || valueType == null)
-                {
-                    return null; // Could not resolve types
-                }
-
-                // Ensure keyObject and valueObject are not null before creating Pair
                 if (keyObject == null || valueObject == null)
                 {
                     return null; // One of the components could not be converted
                 }
 
-                var pairType = typeof(Pair<,>).MakeGenericType(keyType, valueType);
                 return Activator.CreateInstance(pairType, keyObject, valueObject);
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return GetPrimitiveDefault(lowerType);
             }
 
             switch (lowerType)
             {
                 case "int":
-                case "integer":
                     return int.TryParse(value, out var intVal) ? intVal : 0;
                 case "float":
-                case "double":
-                case "number":
                     return float.TryParse(value, out var floatVal) ? floatVal : 0.0f;
+                case "double":
+                    return double.TryParse(value, out var doubleVal) ? doubleVal : 0.0d;
                 case "bool":
-                case "boolean":
                     return bool.TryParse(value, out var boolVal) && boolVal;
                 case "string":
                 default:
                     return value;
+            }
+        }
+
+        private object? GetPrimitiveDefault(string lowerType)
+        {
+            switch (lowerType)
+            {
+                case "int":
+                    return 0;
+                case "float":
+                    return 0.0f;
+                case "double":
+                    return 0.0d;
+                case "bool":
+                    return false;
+                case "string":
+                    return string.Empty;
+                default:
+                    return null;
             }
         }
 
@@ -220,6 +248,7 @@ namespace GSheetToDataCore
             {
                 case "int": return typeof(int);
                 case "float": return typeof(float);
+                case "double": return typeof(double);
                 case "bool": return typeof(bool);
                 case "string": return typeof(string);
                 // Add other types as needed
