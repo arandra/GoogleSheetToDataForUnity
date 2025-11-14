@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SerializableTypes;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace GSheetToDataCore
 {
@@ -63,7 +64,7 @@ namespace GSheetToDataCore
                     break;
                 }
 
-                var fieldName = parsedData.FieldNames[i];
+                var fieldName = NormalizeFieldName(parsedData.FieldNames[i], parsedData.FieldTypes[i]);
                 if (string.IsNullOrWhiteSpace(fieldName))
                 {
                     continue;
@@ -254,6 +255,77 @@ namespace GSheetToDataCore
                 // Add other types as needed
                 default: return null;
             }
+        }
+
+        private string NormalizeFieldName(string fieldName, string fieldType)
+        {
+            var pascal = ToPascalCaseOrThrow(fieldName);
+            if (IsListType(fieldType))
+            {
+                pascal = ClassGenerator.Pluralize(pascal);
+            }
+            return pascal;
+        }
+
+        private static bool IsListType(string fieldType)
+        {
+            if (string.IsNullOrWhiteSpace(fieldType))
+            {
+                return false;
+            }
+
+            var lower = fieldType.ToLowerInvariant();
+            return lower.EndsWith("[]");
+        }
+
+        private string ToPascalCaseOrThrow(string fieldName)
+        {
+            if (string.IsNullOrWhiteSpace(fieldName))
+            {
+                throw new ArgumentException("Field name cannot be null or whitespace when generating JSON.");
+            }
+
+            foreach (var ch in fieldName)
+            {
+                if (char.IsLetterOrDigit(ch) || ch == '_' || char.IsWhiteSpace(ch))
+                {
+                    continue;
+                }
+
+                throw new ArgumentException($"Field name '{fieldName}' contains invalid character '{ch}'.");
+            }
+
+            var normalized = new string(fieldName.Select(c => char.IsWhiteSpace(c) ? ' ' : c).ToArray());
+            var tokens = normalized.Split(new[] { ' ', '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (tokens.Length == 0)
+            {
+                throw new ArgumentException($"Field name '{fieldName}' must contain alphanumeric characters.");
+            }
+
+            var sb = new StringBuilder();
+            foreach (var token in tokens)
+            {
+                var firstChar = char.ToUpperInvariant(token[0]);
+                sb.Append(firstChar);
+                if (token.Length > 1)
+                {
+                    sb.Append(token.Substring(1));
+                }
+            }
+
+            var result = sb.ToString();
+            if (result.Length == 0)
+            {
+                throw new ArgumentException($"Field name '{fieldName}' is invalid after formatting.");
+            }
+
+            if (char.IsDigit(result[0]))
+            {
+                result = "_" + result;
+            }
+
+            return result;
         }
     }
 }
