@@ -1,20 +1,17 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
+using UnityEditor;
 
 namespace GSheetToDataForUnity.Editor
 {
     internal static class GSheetToDataJobStore
     {
-        private static readonly string JobsPath = Path.Combine(
-            GSheetToDataPathUtility.ProjectRoot,
-            "Library",
-            "GSheetToDataJobs.json");
+        private const string JobsKey = "GSheetToDataForUnity.PendingJobs";
 
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
-            Formatting = Formatting.Indented
+            Formatting = Formatting.None
         };
 
         internal static bool HasJobs()
@@ -31,12 +28,7 @@ namespace GSheetToDataForUnity.Editor
 
         internal static List<GSheetToDataGenerationJob> LoadAll()
         {
-            if (!File.Exists(JobsPath))
-            {
-                return new List<GSheetToDataGenerationJob>();
-            }
-
-            var json = File.ReadAllText(JobsPath);
+            var json = SessionState.GetString(JobsKey, "[]");
             var jobs = JsonConvert.DeserializeObject<List<GSheetToDataGenerationJob>>(json);
             return jobs ?? new List<GSheetToDataGenerationJob>();
         }
@@ -56,14 +48,8 @@ namespace GSheetToDataForUnity.Editor
 
         private static void SaveAll(List<GSheetToDataGenerationJob> jobs)
         {
-            var directory = Path.GetDirectoryName(JobsPath);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
             var json = JsonConvert.SerializeObject(jobs, SerializerSettings);
-            File.WriteAllText(JobsPath, json);
+            SessionState.SetString(JobsKey, json);
         }
     }
 }

@@ -18,65 +18,84 @@ namespace GSheetToDataForUnity.Editor
             Converters = new List<JsonConverter> { new PairArrayJsonConverter() }
         };
 
-        internal static bool TryCreate(GSheetToDataGenerationJob job)
+        internal static bool TryCreate(GSheetToDataGenerationJob job, out string errorMessage)
         {
+            errorMessage = string.Empty;
             if (job == null)
             {
-                return true;
-            }
-
-            var dataType = FindType(job.DataClassFullName);
-            var scriptableType = FindType(job.ScriptableObjectFullName);
-
-            if (dataType == null || scriptableType == null)
-            {
+                errorMessage = "Job payload was null.";
                 return false;
             }
 
-            if (!typeof(ScriptableObject).IsAssignableFrom(scriptableType))
+            try
             {
-                Debug.LogError($"[GSheetToData] {job.ScriptableObjectFullName} is not a ScriptableObject.");
+                var dataType = FindType(job.DataClassFullName);
+                var scriptableType = FindType(job.ScriptableObjectFullName);
+
+                if (dataType == null)
+                {
+                    errorMessage = $"Data class '{job.DataClassFullName}' could not be found.";
+                    return false;
+                }
+
+                if (scriptableType == null)
+                {
+                    errorMessage = $"ScriptableObject class '{job.ScriptableObjectFullName}' could not be found.";
+                    return false;
+                }
+
+                if (!typeof(ScriptableObject).IsAssignableFrom(scriptableType))
+                {
+                    errorMessage = $"{job.ScriptableObjectFullName} is not a ScriptableObject.";
+                    Debug.LogError($"[GSheetToData] {errorMessage}");
+                    return false;
+                }
+
+                var assetInstance = ScriptableObject.CreateInstance(scriptableType);
+                if (job.SheetType == SheetDataType.Const)
+                {
+                    var constValue = JsonConvert.DeserializeObject(job.JsonPayload, dataType, SerializerSettings)
+                                    ?? Activator.CreateInstance(dataType);
+                    AssignConstValue(scriptableType, assetInstance, constValue);
+                }
+                else
+                {
+                    var listType = typeof(List<>).MakeGenericType(dataType);
+                    var values = JsonConvert.DeserializeObject(job.JsonPayload, listType, SerializerSettings)
+                                 ?? Activator.CreateInstance(listType);
+                    AssignTableValues(scriptableType, assetInstance, values);
+                }
+                var absoluteAssetPath = GSheetToDataPathUtility.GetAbsoluteFromAssetPath(job.AssetRelativePath);
+                var directory = Path.GetDirectoryName(absoluteAssetPath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var existingAsset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(job.AssetRelativePath);
+                if (existingAsset == null)
+                {
+                    AssetDatabase.CreateAsset(assetInstance, job.AssetRelativePath);
+                    Debug.Log($"[GSheetToData] Created ScriptableObject at {job.AssetRelativePath}.");
+                }
+                else
+                {
+                    EditorUtility.CopySerialized(assetInstance, existingAsset);
+                    EditorUtility.SetDirty(existingAsset);
+                    UnityEngine.Object.DestroyImmediate(assetInstance);
+                    Debug.Log($"[GSheetToData] Updated ScriptableObject at {job.AssetRelativePath}.");
+                }
+
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
                 return true;
             }
-
-            var assetInstance = ScriptableObject.CreateInstance(scriptableType);
-            if (job.SheetType == SheetDataType.Const)
+            catch (System.Exception ex)
             {
-                var constValue = JsonConvert.DeserializeObject(job.JsonPayload, dataType, SerializerSettings)
-                                ?? Activator.CreateInstance(dataType);
-                AssignConstValue(scriptableType, assetInstance, constValue);
+                errorMessage = ex.Message;
+                Debug.LogError($"[GSheetToData] Failed to create asset for {job?.SheetName}: {ex}");
+                return false;
             }
-            else
-            {
-                var listType = typeof(List<>).MakeGenericType(dataType);
-                var values = JsonConvert.DeserializeObject(job.JsonPayload, listType, SerializerSettings)
-                             ?? Activator.CreateInstance(listType);
-                AssignTableValues(scriptableType, assetInstance, values);
-            }
-            var absoluteAssetPath = GSheetToDataPathUtility.GetAbsoluteFromAssetPath(job.AssetRelativePath);
-            var directory = Path.GetDirectoryName(absoluteAssetPath);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            var existingAsset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(job.AssetRelativePath);
-            if (existingAsset == null)
-            {
-                AssetDatabase.CreateAsset(assetInstance, job.AssetRelativePath);
-                Debug.Log($"[GSheetToData] Created ScriptableObject at {job.AssetRelativePath}.");
-            }
-            else
-            {
-                EditorUtility.CopySerialized(assetInstance, existingAsset);
-                EditorUtility.SetDirty(existingAsset);
-                UnityEngine.Object.DestroyImmediate(assetInstance);
-                Debug.Log($"[GSheetToData] Updated ScriptableObject at {job.AssetRelativePath}.");
-            }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            return true;
         }
 
         private static void AssignTableValues(Type scriptableType, ScriptableObject instance, object values)

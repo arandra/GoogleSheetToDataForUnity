@@ -40,8 +40,8 @@ namespace GSheetToDataCore
                 return;
             }
 
-            parsedData.FieldTypes = rows[0].Select(c => c?.ToString() ?? string.Empty).ToList();
-            parsedData.FieldNames = rows[1].Select(c => c?.ToString() ?? string.Empty).ToList();
+            parsedData.FieldTypes = rows[0].Select(c => c?.ToString()?.Trim() ?? string.Empty).ToList();
+            parsedData.FieldNames = rows[1].Select(c => c?.ToString()?.Trim() ?? string.Empty).ToList();
             parsedData.DataRows = rows.Skip(2).Select(r => (IList<object>)r).ToList();
         }
 
@@ -82,7 +82,7 @@ namespace GSheetToDataCore
                 return string.Empty;
             }
 
-            return row[index]?.ToString() ?? string.Empty;
+            return row[index]?.ToString()?.Trim() ?? string.Empty;
         }
     }
 }

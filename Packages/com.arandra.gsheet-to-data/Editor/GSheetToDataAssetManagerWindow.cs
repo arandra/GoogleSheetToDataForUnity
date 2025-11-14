@@ -415,6 +415,7 @@ namespace GSheetToDataForUnity.Editor
                 };
 
                 GSheetToDataJobStore.Enqueue(job);
+                GSheetToDataJobProcessor.RequestProcessing();
                 entry.ScriptOutputPath = dataScriptPath;
                 entry.ScriptableScriptOutputPath = scriptableScriptPath;
                 entry.AssetOutputPath = assetOutputPath;
