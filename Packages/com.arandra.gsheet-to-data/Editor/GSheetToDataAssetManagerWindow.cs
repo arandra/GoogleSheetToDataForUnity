@@ -385,9 +385,15 @@ namespace GSheetToDataForUnity.Editor
                 var baseClassCode = GSheetToDataGenerationUtilities.WrapWithNamespace(dataNamespace, classGenerator.GenerateClassString(parsedData));
 
                 var scriptableClassName = ClassGenerator.Pluralize(parsedData.ClassName);
+                var scriptableUsesSameNamespace = string.Equals(dataNamespace, scriptableNamespace, StringComparison.Ordinal);
+                var dataNamespaceForScriptable = scriptableUsesSameNamespace ? string.Empty : dataNamespace;
                 var scriptableCode = GSheetToDataGenerationUtilities.WrapWithNamespace(
                     scriptableNamespace,
-                    GSheetToDataGenerationUtilities.GenerateScriptableObjectClass(parsedData.ClassName, scriptableClassName, parsedData.SheetType));
+                    GSheetToDataGenerationUtilities.GenerateScriptableObjectClass(
+                        parsedData.ClassName,
+                        scriptableClassName,
+                        parsedData.SheetType,
+                        dataNamespaceForScriptable));
 
                 EditorUtility.DisplayProgressBar(WindowTitle, "Saving scripts...", 0.75f);
                 var baseScriptPath = GSheetToDataGenerationUtilities.WriteScriptFile(parsedData.ClassName + ".cs", baseClassCode, dataScriptPath);

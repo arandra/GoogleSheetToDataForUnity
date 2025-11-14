@@ -74,16 +74,23 @@ namespace GSheetToDataForUnity.Editor
             return builder.ToString();
         }
 
-        internal static string GenerateScriptableObjectClass(string dataClassName, string scriptableClassName, GSheetToDataCore.SheetDataType sheetType)
+        internal static string GenerateScriptableObjectClass(
+            string dataClassName,
+            string scriptableClassName,
+            GSheetToDataCore.SheetDataType sheetType,
+            string dataNamespace)
         {
             var builder = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(dataNamespace))
+            {
+                builder.AppendLine($"using {dataNamespace};");
+            }
             if (sheetType == GSheetToDataCore.SheetDataType.Table)
             {
                 builder.AppendLine("using System.Collections.Generic;");
             }
             builder.AppendLine("using UnityEngine;");
             builder.AppendLine();
-            builder.AppendLine($"[CreateAssetMenu(fileName = \"{scriptableClassName}\", menuName = \"GSheetToData/{scriptableClassName}\")]");
             builder.AppendLine($"public class {scriptableClassName} : ScriptableObject");
             builder.AppendLine("{");
             if (sheetType == GSheetToDataCore.SheetDataType.Table)
