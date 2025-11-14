@@ -72,6 +72,12 @@ namespace GSheetToDataForUnity.Editor
                     Directory.CreateDirectory(directory);
                 }
 
+                var assetName = Path.GetFileNameWithoutExtension(job.AssetRelativePath);
+                if (!string.IsNullOrEmpty(assetName))
+                {
+                    assetInstance.name = assetName;
+                }
+
                 var existingAsset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(job.AssetRelativePath);
                 if (existingAsset == null)
                 {
