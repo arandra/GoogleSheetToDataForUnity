@@ -99,9 +99,12 @@ namespace GSheetToDataCore
             var sb = new StringBuilder();
             foreach (var token in tokens)
             {
-                var lowerToken = token.ToLowerInvariant();
-                var pascalToken = char.ToUpperInvariant(lowerToken[0]) + (lowerToken.Length > 1 ? lowerToken.Substring(1) : string.Empty);
-                sb.Append(pascalToken);
+                var firstChar = char.ToUpperInvariant(token[0]);
+                sb.Append(firstChar);
+                if (token.Length > 1)
+                {
+                    sb.Append(token.Substring(1));
+                }
             }
 
             var result = sb.ToString();
