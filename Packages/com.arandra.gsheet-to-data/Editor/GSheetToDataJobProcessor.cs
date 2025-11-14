@@ -34,6 +34,12 @@ namespace GSheetToDataForUnity.Editor
         private static void ProcessPendingJobs()
         {
             isScheduled = false;
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                ScheduleProcessing();
+                return;
+            }
+
             var jobs = GSheetToDataJobStore.LoadAll();
             if (jobs.Count == 0)
             {
