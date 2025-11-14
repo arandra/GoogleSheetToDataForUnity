@@ -1,7 +1,8 @@
 
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace GSheetToDataCore
 {
@@ -28,7 +29,7 @@ namespace GSheetToDataCore
             {
                 if (i < parsedData.FieldTypes.Count)
                 {
-                    var fieldName = parsedData.FieldNames[i];
+                    var fieldName = ToPascalCaseOrThrow(parsedData.FieldNames[i]);
                     var fieldType = parsedData.FieldTypes[i];
                     var csharpType = GetCSharpType(fieldType);
                     var defaultValue = GetDefaultValue(fieldType); // Get default value here
@@ -55,11 +56,12 @@ namespace GSheetToDataCore
             }
 
             // Simple pluralization rules
-            if (name.EndsWith("s") || name.EndsWith("x") || name.EndsWith("z") || name.EndsWith("ch") || name.EndsWith("sh"))
+            var lowerName = name.ToLowerInvariant();
+            if (lowerName.EndsWith("s") || lowerName.EndsWith("x") || lowerName.EndsWith("z") || lowerName.EndsWith("ch") || lowerName.EndsWith("sh"))
             {
                 return name + "es";
             }
-            else if (name.EndsWith("y") && name.Length > 1 && !"aeiou".Contains(name[name.Length - 2]))
+            else if (lowerName.EndsWith("y") && name.Length > 1 && "aeiou".IndexOf(char.ToLowerInvariant(name[name.Length - 2])) < 0)
             {
                 return name.Substring(0, name.Length - 1) + "ies";
             }
@@ -67,6 +69,53 @@ namespace GSheetToDataCore
             {
                 return name + "s";
             }
+        }
+
+        private string ToPascalCaseOrThrow(string fieldName)
+        {
+            if (string.IsNullOrWhiteSpace(fieldName))
+            {
+                throw new ArgumentException("Field name cannot be null or whitespace when generating classes.");
+            }
+
+            foreach (var ch in fieldName)
+            {
+                if (char.IsLetterOrDigit(ch) || ch == '_' || char.IsWhiteSpace(ch))
+                {
+                    continue;
+                }
+
+                throw new ArgumentException($"Field name '{fieldName}' contains invalid character '{ch}'. Use spaces or underscores as separators.");
+            }
+
+            var normalized = new string(fieldName.Select(c => char.IsWhiteSpace(c) ? ' ' : c).ToArray());
+            var tokens = normalized.Split(new[] { ' ', '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (tokens.Length == 0)
+            {
+                throw new ArgumentException($"Field name '{fieldName}' must contain alphanumeric characters.");
+            }
+
+            var sb = new StringBuilder();
+            foreach (var token in tokens)
+            {
+                var lowerToken = token.ToLowerInvariant();
+                var pascalToken = char.ToUpperInvariant(lowerToken[0]) + (lowerToken.Length > 1 ? lowerToken.Substring(1) : string.Empty);
+                sb.Append(pascalToken);
+            }
+
+            var result = sb.ToString();
+            if (result.Length == 0)
+            {
+                throw new ArgumentException($"Field name '{fieldName}' is invalid after formatting.");
+            }
+
+            if (char.IsDigit(result[0]))
+            {
+                result = "_" + result;
+            }
+
+            return result;
         }
 
         private string GetDefaultValue(string typeName)
