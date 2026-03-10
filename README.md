@@ -21,6 +21,8 @@ In many teams the workflow looks like this: someone designs a spreadsheet, a pro
 3. **The Unity package hosts editor tooling** (OAuth setup, sheet registry, generation actions, per-sheet overrides) so you can run the pipeline from inside Unity.
 4. **Other platforms reuse the same data** by referencing the shared core library or the exported pure data artifacts.
 
+The sheet format supports split list columns such as `Rewards#0`, `Rewards#1`, `Rewards#2`, letting large list values stay readable while still generating a single list property.
+
 ---
 
 ## When should you use this?
@@ -101,6 +103,8 @@ Steps:
 - [Sheet Authoring Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md)
 - [Google OAuth Setup Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/GoogleOAuthSetup.md)
 - [Project Links](Document/ProjectLinks.md)
+
+The Sheet Authoring Guide documents the split list column rules, including contiguous `#<index>` requirements, shared typing, and blank-cell validation.
 
 ---
 

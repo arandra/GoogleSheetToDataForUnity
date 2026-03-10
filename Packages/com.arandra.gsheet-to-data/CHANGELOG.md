@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-03-10
+### Changed
+- Prepared a new package release for the latest Core update by bumping the Unity package version.
+- Documented split list columns (`FieldName#0`, `FieldName#1`, ...) across the Core sheet authoring guide and Unity package READMEs.
+
 ## [0.1.1] - 2025-11-11
 ### Fixed
 - Bumped the package version to invalidate Unity’s cached immutable folders and ensure fresh metadata is downloaded.
@@ -25,5 +30,6 @@ All notable changes to this package are documented here. The format follows [Kee
 ### Testing
 - Unity 2022.2 LTS git URL install: ❌ Pending (Unity editor not available in this environment).
 
+[0.1.2]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.1.2
 [0.1.1]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.1.1
 [0.1.0]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.1.0

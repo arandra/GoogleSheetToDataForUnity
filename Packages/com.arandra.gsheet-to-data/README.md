@@ -45,6 +45,13 @@ https://github.com/arandra/GoogleSheetToDataForUnity.git?path=Packages/com.arand
 
 Each sample folder ships a JSON preset that documents which IDs/names to paste into the generator plus a README walking through OAuth/token expectations.
 
+## Sheet Authoring Notes
+- List values can span multiple columns by suffixing the field name with `#0`, `#1`, `#2`, and so on.
+- Split list indexes must start at `0`, stay contiguous, and use the same field type across the group.
+- Trailing blank cells are ignored, but a blank cell followed by a later non-blank cell is treated as an error.
+- These rules apply to both **Table** and **Const** sheets.
+- See the upstream [Sheet Authoring Guide](https://github.com/arandra/GoogleSheetToData/blob/master/Document/SheetAuthoringGuide.md) for the full layout rules and examples.
+
 ## Versioning
 - Core repo (`core/` submodule) follows `MAJOR.MINOR`.
 - Unity package follows `MAJOR.MINOR.PATCH`.
