@@ -184,6 +184,11 @@ namespace GSheetToDataForUnity.Editor
                 EditorGUILayout.LabelField("Last Fields", string.Join(", ", entry.LastFieldNames));
             }
 
+            if (entry.GeneratedEnumNames != null && entry.GeneratedEnumNames.Count > 0)
+            {
+                EditorGUILayout.LabelField("Generated Enums", string.Join(", ", entry.GeneratedEnumNames));
+            }
+
             EditorGUILayout.Space(10f);
             using (new EditorGUI.DisabledScope(isProcessing))
             {
@@ -265,7 +270,8 @@ namespace GSheetToDataForUnity.Editor
                 OverrideScriptableScriptOutputPath = false,
                 AssetRelativePath = string.Empty,
                 LastFieldNames = new List<string>(),
-                LastFieldTypes = new List<string>()
+                LastFieldTypes = new List<string>(),
+                GeneratedEnumNames = new List<string>()
             };
 
             registry.Upsert(entry);
@@ -292,10 +298,31 @@ namespace GSheetToDataForUnity.Editor
         {
             var paths = new List<string>
             {
-                entry.AssetRelativePath,
-                CombineAssetPath(entry.ScriptOutputPath, entry.DataClassName + ".cs"),
-                CombineAssetPath(entry.ScriptableScriptOutputPath, entry.ScriptableClassName + ".cs")
+                entry.AssetRelativePath
             };
+
+            if (!string.IsNullOrWhiteSpace(entry.DataClassName))
+            {
+                paths.Add(CombineAssetPath(entry.ScriptOutputPath, entry.DataClassName + ".cs"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(entry.ScriptableClassName))
+            {
+                paths.Add(CombineAssetPath(entry.ScriptableScriptOutputPath, entry.ScriptableClassName + ".cs"));
+            }
+
+            if (entry.GeneratedEnumNames != null)
+            {
+                foreach (var enumName in entry.GeneratedEnumNames)
+                {
+                    if (string.IsNullOrWhiteSpace(enumName))
+                    {
+                        continue;
+                    }
+
+                    paths.Add(CombineAssetPath(entry.ScriptOutputPath, enumName + ".cs"));
+                }
+            }
 
             foreach (var path in paths)
             {
@@ -365,10 +392,18 @@ namespace GSheetToDataForUnity.Editor
                 EditorUtility.DisplayProgressBar(WindowTitle, "Parsing sheet data...", 0.5f);
                 var parser = new DataParser();
                 var parsedData = parser.Parse(entry.SheetName, values, entry.SheetType);
-                if (string.IsNullOrEmpty(parsedData.ClassName))
+                if (entry.SheetType != SheetDataType.Enum && string.IsNullOrEmpty(parsedData.ClassName))
                 {
                     throw new InvalidOperationException("Failed to parse sheet data.");
                 }
+
+                if (entry.SheetType == SheetDataType.Enum)
+                {
+                    GenerateEnumScripts(entry, parsedData, dataScriptPath, assetOutputPath, dataNamespace, currentDefaults);
+                    return;
+                }
+
+                DeleteGeneratedEnumScripts(entry);
 
                 var addedFields = ComputeDiff(parsedData.FieldNames, entry.LastFieldNames);
                 var removedFields = ComputeDiff(entry.LastFieldNames, parsedData.FieldNames);
@@ -459,6 +494,132 @@ namespace GSheetToDataForUnity.Editor
             return source.Except(target).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         }
 
+        private void GenerateEnumScripts(
+            GSheetToDataAssetRegistryEntry entry,
+            ParsedSheetData parsedData,
+            string dataScriptPath,
+            string assetOutputPath,
+            string dataNamespace,
+            GSheetToDataAppSettings currentDefaults)
+        {
+            var enumGenerator = new EnumGenerator();
+            var enumStrings = enumGenerator.GenerateEnumStrings(parsedData);
+            var enumNames = enumStrings.Keys.Where(name => !string.IsNullOrWhiteSpace(name)).OrderBy(name => name).ToList();
+
+            if (enumNames.Count == 0)
+            {
+                throw new InvalidOperationException("Enum sheet did not produce any enum definitions.");
+            }
+
+            var addedEnums = ComputeDiff(enumNames, entry.GeneratedEnumNames);
+            var removedEnums = ComputeDiff(entry.GeneratedEnumNames, enumNames);
+            if ((addedEnums.Count > 0 || removedEnums.Count > 0) && entry.GeneratedEnumNames != null && entry.GeneratedEnumNames.Count > 0)
+            {
+                var diffMessage = BuildDiffMessage(addedEnums, removedEnums);
+                if (!EditorUtility.DisplayDialog("Enum schema changed", diffMessage, "Re-generate", "Cancel"))
+                {
+                    return;
+                }
+            }
+
+            DeleteGeneratedTableArtifacts(entry);
+
+            foreach (var removedEnum in removedEnums)
+            {
+                var removedEnumPath = NormalizeAssetPath(CombineAssetPath(dataScriptPath, removedEnum + ".cs"));
+                if (!string.IsNullOrEmpty(removedEnumPath))
+                {
+                    AssetDatabase.DeleteAsset(removedEnumPath);
+                }
+            }
+
+            var generatedScriptPaths = new List<string>();
+            foreach (var pair in enumStrings.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+            {
+                var wrappedCode = GSheetToDataGenerationUtilities.WrapWithNamespace(dataNamespace, pair.Value);
+                var scriptPath = GSheetToDataGenerationUtilities.WriteScriptFile(pair.Key + ".cs", wrappedCode, dataScriptPath);
+                generatedScriptPaths.Add(scriptPath);
+            }
+
+            entry.DataClassName = string.Empty;
+            entry.DataClassFullName = string.Empty;
+            entry.ScriptableClassName = string.Empty;
+            entry.ScriptableObjectFullName = string.Empty;
+            entry.AssetRelativePath = string.Empty;
+            entry.ScriptOutputPath = dataScriptPath;
+            entry.ScriptableScriptOutputPath = entry.OverrideScriptableScriptOutputPath
+                ? entry.ScriptableScriptOutputPath
+                : currentDefaults.GetScriptableScriptOutputPath();
+            entry.AssetOutputPath = assetOutputPath;
+            entry.Namespace = dataNamespace;
+            entry.ScriptableNamespace = entry.OverrideScriptableNamespace
+                ? entry.ScriptableNamespace
+                : currentDefaults.GetScriptableNamespace();
+            entry.GeneratedEnumNames = enumNames;
+
+            var enumJob = new GSheetToDataGenerationJob
+            {
+                SheetId = entry.SheetId,
+                SheetName = entry.SheetName,
+                SheetType = parsedData.SheetType
+            };
+
+            GSheetToDataAssetRegistryUtility.UpsertEntry(
+                enumJob,
+                parsedData,
+                string.Empty,
+                dataScriptPath,
+                entry.ScriptableScriptOutputPath,
+                assetOutputPath,
+                dataNamespace,
+                entry.ScriptableNamespace,
+                entry.OverrideScriptOutputPath,
+                entry.OverrideScriptableScriptOutputPath,
+                entry.OverrideAssetOutputPath,
+                entry.OverrideNamespace,
+                entry.OverrideScriptableNamespace,
+                enumNames);
+
+            AssetDatabase.Refresh();
+            statusMessage = $"Generated enums for {entry.SheetName}. Scripts: {string.Join(", ", generatedScriptPaths)}";
+        }
+
+        private static void DeleteGeneratedEnumScripts(GSheetToDataAssetRegistryEntry entry)
+        {
+            if (entry.GeneratedEnumNames == null)
+            {
+                return;
+            }
+
+            foreach (var enumName in entry.GeneratedEnumNames)
+            {
+                var enumPath = NormalizeAssetPath(CombineAssetPath(entry.ScriptOutputPath, enumName + ".cs"));
+                if (!string.IsNullOrEmpty(enumPath))
+                {
+                    AssetDatabase.DeleteAsset(enumPath);
+                }
+            }
+        }
+
+        private static void DeleteGeneratedTableArtifacts(GSheetToDataAssetRegistryEntry entry)
+        {
+            var paths = new[]
+            {
+                entry.AssetRelativePath,
+                CombineAssetPath(entry.ScriptOutputPath, entry.DataClassName + ".cs"),
+                CombineAssetPath(entry.ScriptableScriptOutputPath, entry.ScriptableClassName + ".cs")
+            };
+
+            foreach (var path in paths)
+            {
+                var normalized = NormalizeAssetPath(path);
+                if (!string.IsNullOrEmpty(normalized))
+                {
+                    AssetDatabase.DeleteAsset(normalized);
+                }
+            }
+        }
+
         private static string BuildDiffMessage(List<string> added, List<string> removed)
         {
             var builder = new System.Text.StringBuilder();
@@ -496,7 +657,7 @@ namespace GSheetToDataForUnity.Editor
 
         private static string CombineAssetPath(string folder, string fileName)
         {
-            if (string.IsNullOrWhiteSpace(folder))
+            if (string.IsNullOrWhiteSpace(folder) || string.IsNullOrWhiteSpace(fileName))
             {
                 return string.Empty;
             }

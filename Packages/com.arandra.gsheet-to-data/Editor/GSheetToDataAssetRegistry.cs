@@ -30,6 +30,7 @@ namespace GSheetToDataForUnity.Editor
         public string LastSyncedUtc = DateTime.UtcNow.ToString("o");
         public List<string> LastFieldNames = new List<string>();
         public List<string> LastFieldTypes = new List<string>();
+        public List<string> GeneratedEnumNames = new List<string>();
     }
 
     internal sealed class GSheetToDataAssetRegistry : ScriptableObject
@@ -68,6 +69,7 @@ namespace GSheetToDataForUnity.Editor
                 existing.LastSyncedUtc = entry.LastSyncedUtc;
                 existing.LastFieldNames = new List<string>(entry.LastFieldNames ?? new List<string>());
                 existing.LastFieldTypes = new List<string>(entry.LastFieldTypes ?? new List<string>());
+                existing.GeneratedEnumNames = new List<string>(entry.GeneratedEnumNames ?? new List<string>());
             }
         }
 

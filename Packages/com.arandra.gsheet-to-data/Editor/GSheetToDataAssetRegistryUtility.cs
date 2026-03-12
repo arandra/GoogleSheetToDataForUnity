@@ -21,7 +21,8 @@ namespace GSheetToDataForUnity.Editor
             bool overrideScriptableScriptOutputPath,
             bool overrideAssetOutputPath,
             bool overrideNamespace,
-            bool overrideScriptableNamespace)
+            bool overrideScriptableNamespace,
+            List<string>? generatedEnumNames = null)
         {
             var registry = GSheetToDataSettingsStore.LoadOrCreateRegistry();
             var entry = new GSheetToDataAssetRegistryEntry
@@ -46,7 +47,8 @@ namespace GSheetToDataForUnity.Editor
                 AssetRelativePath = job.AssetRelativePath,
                 LastSyncedUtc = DateTime.UtcNow.ToString("o"),
                 LastFieldNames = new List<string>(parsedData.FieldNames ?? new List<string>()),
-                LastFieldTypes = new List<string>(parsedData.FieldTypes ?? new List<string>())
+                LastFieldTypes = new List<string>(parsedData.FieldTypes ?? new List<string>()),
+                GeneratedEnumNames = new List<string>(generatedEnumNames ?? new List<string>())
             };
 
             registry.Upsert(entry);
