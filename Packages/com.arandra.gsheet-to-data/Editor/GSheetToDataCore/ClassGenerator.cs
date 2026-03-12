@@ -123,6 +123,11 @@ namespace GSheetToDataCore
 
         private string GetDefaultValue(string typeName)
         {
+            if (IsEnumType(typeName))
+            {
+                return "default";
+            }
+
             var lowerType = typeName.ToLower();
 
             if (lowerType.EndsWith("[]"))
@@ -157,6 +162,11 @@ namespace GSheetToDataCore
 
         private string GetCSharpType(string typeName)
         {
+            if (IsEnumType(typeName))
+            {
+                return ExtractEnumTypeName(typeName);
+            }
+
             var lowerType = typeName.ToLower();
 
             if (lowerType.EndsWith("[]"))
@@ -190,6 +200,39 @@ namespace GSheetToDataCore
                 case "string": return "string";
                 default: return "object"; // Default to object for unknown types
             }
+        }
+
+        private static bool IsEnumType(string typeName)
+        {
+            return TryExtractEnumTypeName(typeName, out _);
+        }
+
+        private static string ExtractEnumTypeName(string typeName)
+        {
+            if (TryExtractEnumTypeName(typeName, out var enumTypeName))
+            {
+                return enumTypeName;
+            }
+
+            return "object";
+        }
+
+        private static bool TryExtractEnumTypeName(string typeName, out string enumTypeName)
+        {
+            enumTypeName = string.Empty;
+            if (string.IsNullOrWhiteSpace(typeName))
+            {
+                return false;
+            }
+
+            var trimmed = typeName.Trim();
+            if (!trimmed.StartsWith("enum(", StringComparison.OrdinalIgnoreCase) || !trimmed.EndsWith(")"))
+            {
+                return false;
+            }
+
+            enumTypeName = trimmed.Substring(5, trimmed.Length - 6).Trim();
+            return !string.IsNullOrWhiteSpace(enumTypeName);
         }
     }
 }
