@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Requests;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
@@ -30,7 +31,16 @@ namespace GSheetToDataCore
             var range = $"'{sheetName}'!A1:Z";
             var request = service.Spreadsheets.Values.Get(spreadsheetId, range);
 
-            return await request.ExecuteAsync();
+            try
+            {
+                return await request.ExecuteAsync();
+            }
+            catch (GoogleApiException ex) when (IsSheetRangeError(ex))
+            {
+                throw new InvalidOperationException(
+                    BuildSheetNameErrorMessage(sheetName, range, ex),
+                    ex);
+            }
         }
 
         private async Task<UserCredential> GetUserCredentialAsync(string clientSecretPath, string? tokenStorePath)
@@ -55,6 +65,27 @@ namespace GSheetToDataCore
                 "user",
                 CancellationToken.None,
                 dataStore);
+        }
+
+        private static bool IsSheetRangeError(GoogleApiException ex)
+        {
+            if (ex == null)
+            {
+                return false;
+            }
+
+            var message = ex.Message ?? string.Empty;
+            return message.IndexOf("Unable to parse range", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static string BuildSheetNameErrorMessage(string sheetName, string range, GoogleApiException ex)
+        {
+            var apiMessage = ex.Message ?? "Unknown Google Sheets API error.";
+            return
+                $"Could not read sheet '{sheetName}'. " +
+                $"Check that the Asset Manager 'Sheet Name' exactly matches the tab name in Google Sheets. " +
+                $"Requested range: {range}. " +
+                $"API message: {apiMessage}";
         }
     }
 }
