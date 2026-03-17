@@ -78,10 +78,14 @@ $currentFiles = $currentFiles | Sort-Object -Unique
 $oldFiles = @()
 if (Test-Path $manifestPath) {
     $json = Get-Content $manifestPath -Raw | ConvertFrom-Json
-    if ($json -is [System.Collections.IEnumerable]) {
+    if ($json -is [string]) {
+        $oldFiles = @($json)
+    } elseif ($json -is [System.Array]) {
         $oldFiles = $json
-    } else {
+    } elseif ($null -ne $json -and $json.PSObject.Properties["files"]) {
         $oldFiles = $json.files
+    } else {
+        throw "Invalid .sync-manifest.json format. Expected a string array."
     }
 } else {
     foreach ($target in $targets) {
@@ -102,7 +106,7 @@ foreach ($rel in $removed) {
     }
 }
 
-$currentFiles | Sort-Object | ConvertTo-Json | Set-Content $manifestPath -Encoding UTF8
+@($currentFiles | Sort-Object) | ConvertTo-Json | Set-Content $manifestPath -Encoding UTF8
 
 function Get-GuidFromPath([string]$relPath) {
     $md5 = [System.Security.Cryptography.MD5]::Create()

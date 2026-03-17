@@ -1,10 +1,7 @@
 ﻿[
     "Editor/GSheetToDataCore/ClassGenerator.cs",
     "Editor/GSheetToDataCore/DataParser.cs",
-    {
-        "value":  "Editor/GSheetToDataCore/EnumGenerator.cs",
-        "SideIndicator":  "=\u003e"
-    },
+    "Editor/GSheetToDataCore/EnumGenerator.cs",
     "Editor/GSheetToDataCore/JsonGenerator.cs",
     "Editor/GSheetToDataCore/ParsedSheetData.cs",
     "Editor/GSheetToDataCore/SheetDataType.cs",
