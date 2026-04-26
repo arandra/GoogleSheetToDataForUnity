@@ -96,7 +96,7 @@ namespace GSheetToDataCore
             var baseTypeName = fieldType.Substring(0, fieldType.Length - 2);
             if (IsEnumType(baseTypeName))
             {
-                return cells.Cast<object?>().Select(cell => cell?.ToString() ?? string.Empty).ToList();
+                return cells.Cast<object?>().Select(cell => ConvertToTypedObject(cell?.ToString(), baseTypeName)).ToList();
             }
 
             var baseType = GetSystemType(baseTypeName);
@@ -122,7 +122,7 @@ namespace GSheetToDataCore
         {
             if (IsEnumType(type))
             {
-                return value ?? string.Empty;
+                return ConvertEnumValue(value);
             }
 
             var lowerType = type.ToLower();
@@ -263,6 +263,16 @@ namespace GSheetToDataCore
                 default:
                     return null;
             }
+        }
+
+        private static object ConvertEnumValue(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return 0;
+            }
+
+            return value;
         }
 
         private Type? GetSystemType(string typeName)
