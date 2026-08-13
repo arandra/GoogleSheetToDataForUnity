@@ -64,16 +64,26 @@ function Get-FileList($path) {
     return $result
 }
 
+function Test-IsSyncSourceFile([System.IO.FileInfo]$file, [string]$sourceRoot) {
+    $relative = $file.FullName.Substring($sourceRoot.Length + 1).Replace("\", "/")
+    if ($relative -match '(^|/)(\.git|\.vs|bin|obj)(/|$)') {
+        return $false
+    }
+
+    return $file.Extension -notin @(".meta", ".csproj", ".user") `
+        -and $file.Name -notlike "*.csproj.nuget.*"
+}
+
 $currentFiles = @()
 foreach ($target in $targets) {
     if (-not (Test-Path $target.Source)) { continue }
     $prefix = $target.Rel
-    Get-ChildItem $target.Source -Recurse -File | Where-Object { $_.Extension -notin @(".meta", ".csproj") } | ForEach-Object {
+    Get-ChildItem $target.Source -Recurse -File | Where-Object { Test-IsSyncSourceFile $_ $target.Source } | ForEach-Object {
         $relativeInner = $_.FullName.Substring($target.Source.Length + 1).Replace("\", "/")
         $currentFiles += "$prefix/$relativeInner"
     }
 }
-$currentFiles = $currentFiles | Sort-Object -Unique
+$currentFiles = @($currentFiles | ForEach-Object { [string]$_ } | Sort-Object -Unique)
 
 $oldFiles = @()
 if (Test-Path $manifestPath) {
@@ -93,8 +103,16 @@ if (Test-Path $manifestPath) {
     }
 }
 
-$oldFiles = $oldFiles | Sort-Object -Unique
-$removed = Compare-Object -ReferenceObject $oldFiles -DifferenceObject $currentFiles -PassThru | Where-Object { $_ -in $oldFiles } | Sort-Object -Unique
+$oldFiles = @($oldFiles | ForEach-Object {
+    if ($_ -is [string]) {
+        [string]$_
+    } elseif ($null -ne $_ -and $_.PSObject.Properties["value"]) {
+        [string]$_.value
+    } else {
+        throw "Invalid sync manifest entry. Expected a string path."
+    }
+} | Sort-Object -Unique)
+$removed = @($oldFiles | Where-Object { $_ -notin $currentFiles } | Sort-Object -Unique)
 foreach ($rel in $removed) {
     $targetPath = Join-Path $packageRoot $rel
     if (Test-Path $targetPath) {

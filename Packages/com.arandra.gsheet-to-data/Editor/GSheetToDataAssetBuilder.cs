@@ -15,7 +15,11 @@ namespace GSheetToDataForUnity.Editor
     {
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
-            Converters = new List<JsonConverter> { new PairArrayJsonConverter() }
+            Converters = new List<JsonConverter>
+            {
+                new PairArrayJsonConverter(),
+                new SerializableListJsonConverter()
+            }
         };
 
         internal static bool TryCreate(GSheetToDataGenerationJob job, out string errorMessage)

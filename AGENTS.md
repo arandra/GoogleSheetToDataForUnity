@@ -1,5 +1,4 @@
 # 한국어로 대화 할 것.
-# 계획을 먼저 세우고 실행할 지 물어볼 것.
 
 # Repository Guidelines
 

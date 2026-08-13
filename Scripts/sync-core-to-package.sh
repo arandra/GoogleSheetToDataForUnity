@@ -96,9 +96,14 @@ for dest_rel, src_path in pairs:
     if not src_path.exists():
         continue
     for file_path in src_path.rglob("*"):
-        if file_path.is_file() and not file_path.name.endswith(".meta") and not file_path.name.endswith(".csproj"):
-            rel_inside = file_path.relative_to(src_path).as_posix()
-            current.append(f"{dest_rel}/{rel_inside}")
+        if not file_path.is_file():
+            continue
+        rel_path = file_path.relative_to(src_path)
+        if any(part in {".git", ".vs", "bin", "obj"} for part in rel_path.parts):
+            continue
+        if file_path.name.endswith((".meta", ".csproj", ".user")) or ".csproj.nuget." in file_path.name:
+            continue
+        current.append(f"{dest_rel}/{rel_path.as_posix()}")
 
 old_set = set(old)
 current_set = set(current)

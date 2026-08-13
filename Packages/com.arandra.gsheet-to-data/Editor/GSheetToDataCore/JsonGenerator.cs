@@ -16,7 +16,11 @@ namespace GSheetToDataCore
             jsonSerializerSettings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
-                Converters = new List<JsonConverter> { new PairArrayJsonConverter() }
+                Converters = new List<JsonConverter>
+                {
+                    new PairArrayJsonConverter(),
+                    new SerializableListJsonConverter()
+                }
             };
         }
 

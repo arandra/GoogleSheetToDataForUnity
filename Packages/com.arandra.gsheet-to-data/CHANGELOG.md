@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-08-13
+### Added
+- Added Unity-serializable two-dimensional list support for `int`, `float`, `double`, `bool`, `string`, and `Pair<TKey, TValue>` fields.
+- Added generic `SerializableList<T>` and `SerializablePairList<TKey, TValue>` implementations with non-generic Unity-facing wrapper types.
+
 ## [0.1.4] - 2026-04-26
 ### Fixed
 - Empty enum cells now serialize as the enum default value instead of an empty string, avoiding deserialization errors.
@@ -39,6 +44,7 @@ All notable changes to this package are documented here. The format follows [Kee
 ### Testing
 - Unity 2022.2 LTS git URL install: ❌ Pending (Unity editor not available in this environment).
 
+[0.2.0]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.2.0
 [0.1.4]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.1.4
 [0.1.3]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.1.3
 [0.1.2]: https://github.com/arandra/GoogleSheetToDataForUnity/releases/tag/v0.1.2

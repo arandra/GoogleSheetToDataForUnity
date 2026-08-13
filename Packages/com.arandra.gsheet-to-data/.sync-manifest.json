@@ -7,5 +7,7 @@
     "Editor/GSheetToDataCore/SheetDataType.cs",
     "Editor/GSheetToDataCore/SheetLoader.cs",
     "Runtime/SerializableTypes/Pair.cs",
-    "Runtime/SerializableTypes/PairJsonConverter.cs"
+    "Runtime/SerializableTypes/PairJsonConverter.cs",
+    "Runtime/SerializableTypes/SerializableList.cs",
+    "Runtime/SerializableTypes/SerializableListJsonConverter.cs"
 ]

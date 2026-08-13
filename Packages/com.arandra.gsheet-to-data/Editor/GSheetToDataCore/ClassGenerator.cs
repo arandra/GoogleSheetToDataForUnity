@@ -23,6 +23,7 @@ namespace GSheetToDataCore
             sb.AppendLine($"[Serializable]");
             sb.AppendLine($"public class {parsedData.ClassName}");
             sb.AppendLine("{");
+            var pairListWrappers = new List<string>();
 
             // Properties
             for (int i = 0; i < parsedData.FieldNames.Count; i++)
@@ -31,8 +32,19 @@ namespace GSheetToDataCore
                 {
                     var fieldName = ToPascalCaseOrThrow(parsedData.FieldNames[i]);
                     var fieldType = parsedData.FieldTypes[i];
-                    var csharpType = GetCSharpType(fieldType);
-                    var defaultValue = GetDefaultValue(fieldType); // Get default value here
+                    string? pairListWrapperType = null;
+                    if (TryGetNestedPairTypes(fieldType, out var keyType, out var valueType))
+                    {
+                        pairListWrapperType = $"{fieldName}ItemList";
+                        pairListWrappers.Add(
+                            $"    [Serializable]\n" +
+                            $"    public sealed class {pairListWrapperType} : SerializablePairList<{keyType}, {valueType}>\n" +
+                            "    {\n" +
+                            "    }");
+                    }
+
+                    var csharpType = GetCSharpType(fieldType, pairListWrapperType);
+                    var defaultValue = GetDefaultValue(fieldType, pairListWrapperType);
 
                     // Pluralize field name if it's a list type
                     if (csharpType.StartsWith("List<"))
@@ -41,6 +53,12 @@ namespace GSheetToDataCore
                     }
                     sb.AppendLine($"    public {csharpType} {fieldName} = {defaultValue};");
                 }
+            }
+
+            if (pairListWrappers.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine(string.Join("\n\n", pairListWrappers));
             }
 
             sb.AppendLine("}");
@@ -121,7 +139,7 @@ namespace GSheetToDataCore
             return result;
         }
 
-        private string GetDefaultValue(string typeName)
+        private string GetDefaultValue(string typeName, string? pairListWrapperType = null)
         {
             if (IsEnumType(typeName))
             {
@@ -132,8 +150,7 @@ namespace GSheetToDataCore
 
             if (lowerType.EndsWith("[]"))
             {
-                var baseType = GetCSharpType(typeName.Substring(0, typeName.Length - 2));
-                return $"new List<{baseType}>()";
+                return $"new {GetCSharpType(typeName, pairListWrapperType)}()";
             }
 
             if (lowerType.StartsWith("pair<") && lowerType.EndsWith(">"))
@@ -146,8 +163,8 @@ namespace GSheetToDataCore
                     return "default"; // Fallback for invalid pair definition
                 }
 
-                var keyCSharpType = GetCSharpType(genericTypes[0]);
-                var valueCSharpType = GetCSharpType(genericTypes[1]);
+                var keyCSharpType = GetCSharpType(genericTypes[0], pairListWrapperType);
+                var valueCSharpType = GetCSharpType(genericTypes[1], pairListWrapperType);
 
                 return $"default(Pair<{keyCSharpType}, {valueCSharpType}>)";
             }
@@ -160,7 +177,7 @@ namespace GSheetToDataCore
             return "default";
         }
 
-        private string GetCSharpType(string typeName)
+        private string GetCSharpType(string typeName, string? pairListWrapperType = null)
         {
             if (IsEnumType(typeName))
             {
@@ -171,7 +188,18 @@ namespace GSheetToDataCore
 
             if (lowerType.EndsWith("[]"))
             {
-                var baseType = GetCSharpType(typeName.Substring(0, typeName.Length - 2));
+                var elementTypeName = typeName.Substring(0, typeName.Length - 2);
+                if (TryGetPrimitiveListWrapper(elementTypeName, out var primitiveListWrapper))
+                {
+                    return $"List<{primitiveListWrapper}>";
+                }
+
+                if (!string.IsNullOrEmpty(pairListWrapperType) && IsPairListType(elementTypeName))
+                {
+                    return $"List<{pairListWrapperType}>";
+                }
+
+                var baseType = GetCSharpType(elementTypeName, pairListWrapperType);
                 return $"List<{baseType}>";
             }
 
@@ -185,8 +213,8 @@ namespace GSheetToDataCore
                     return "object"; // Fallback for invalid pair definition
                 }
 
-                var keyCSharpType = GetCSharpType(genericTypes[0]);
-                var valueCSharpType = GetCSharpType(genericTypes[1]);
+                var keyCSharpType = GetCSharpType(genericTypes[0], pairListWrapperType);
+                var valueCSharpType = GetCSharpType(genericTypes[1], pairListWrapperType);
 
                 return $"Pair<{keyCSharpType}, {valueCSharpType}>";
             }
@@ -200,6 +228,87 @@ namespace GSheetToDataCore
                 case "string": return "string";
                 default: return "object"; // Default to object for unknown types
             }
+        }
+
+        private bool TryGetNestedPairTypes(string typeName, out string keyType, out string valueType)
+        {
+            keyType = string.Empty;
+            valueType = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(typeName) || !typeName.EndsWith("[][]", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var pairTypeName = typeName.Substring(0, typeName.Length - 4);
+            if (!TryGetPairTypeNames(pairTypeName, out var keyTypeName, out var valueTypeName))
+            {
+                return false;
+            }
+
+            keyType = GetCSharpType(keyTypeName);
+            valueType = GetCSharpType(valueTypeName);
+            return keyType != "object" && valueType != "object";
+        }
+
+        private static bool TryGetPrimitiveListWrapper(string typeName, out string wrapperType)
+        {
+            wrapperType = string.Empty;
+            if (string.IsNullOrWhiteSpace(typeName) || !typeName.EndsWith("[]", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var elementType = typeName.Substring(0, typeName.Length - 2).Trim().ToLowerInvariant();
+            switch (elementType)
+            {
+                case "int": wrapperType = "ListInt"; return true;
+                case "float": wrapperType = "ListFloat"; return true;
+                case "double": wrapperType = "ListDouble"; return true;
+                case "bool": wrapperType = "ListBool"; return true;
+                case "string": wrapperType = "ListString"; return true;
+                default: return false;
+            }
+        }
+
+        private static bool IsPairListType(string typeName)
+        {
+            if (string.IsNullOrWhiteSpace(typeName) || !typeName.EndsWith("[]", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            return TryGetPairTypeNames(typeName.Substring(0, typeName.Length - 2), out _, out _);
+        }
+
+        private static bool TryGetPairTypeNames(string typeName, out string keyType, out string valueType)
+        {
+            keyType = string.Empty;
+            valueType = string.Empty;
+            if (string.IsNullOrWhiteSpace(typeName))
+            {
+                return false;
+            }
+
+            var trimmed = typeName.Trim();
+            if (!trimmed.StartsWith("pair<", StringComparison.OrdinalIgnoreCase) || !trimmed.EndsWith(">"))
+            {
+                return false;
+            }
+
+            var genericArgs = trimmed.Substring(5, trimmed.Length - 6)
+                .Split(',')
+                .Select(type => type.Trim())
+                .ToArray();
+
+            if (genericArgs.Length != 2)
+            {
+                return false;
+            }
+
+            keyType = genericArgs[0];
+            valueType = genericArgs[1];
+            return true;
         }
 
         private static bool IsEnumType(string typeName)
